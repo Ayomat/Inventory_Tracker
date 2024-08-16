@@ -9,7 +9,12 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@emotion/react": "^11.13.0",
+    "@emotion/styled": "^11.13.0",
+    "@mui/icons-material": "^5.16.7",
+    "@mui/material": "^5.16.7",
     "@next/env": "^14.2.5",
+    "@tanstack/react-table": "^8.20.1",
     "dotenv": "^16.4.5",
     "next": "14.2.5",
     "react": "^18",
