@@ -13,6 +13,7 @@ import Paper from '@mui/material/Paper';
 import './globals.css';
 import SpaIcon from '@mui/icons-material/Spa';
 import ReactMarkdown from 'react-markdown';
+import GridLoader from "react-spinners/ClipLoader";
 
 
 export default function Home() {
@@ -20,12 +21,13 @@ export default function Home() {
   const [open, setOpen] = useState(false);
   const [itemName, setItemName] = useState('');
   const [unit, setUnit] = useState('');
+  const [quantity, setQuantity] = useState('');
   const [searchName, setSearchName] = useState('');
   const [recipes, setRecipes] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
   // Function to call the API to generate recipes
-  const onSubmit = async () => {
+  const onSubmitHP = async () => {
     const prePrompt = `
 You are an AI nutrition expert tasked with analyzing a list of food items and their quantities. Based on this information, you need to:
 1. **Retrieve the nutritional information** for each food item.
@@ -56,7 +58,10 @@ const afterPrompt= `
    - Recommendations for increasing the intake of proteins, fiber, or essential vitamins.
    - Warnings for high sodium or unhealthy fats.
     `;
-    const allItems = inventory.map(item => item.name).join(', ');
+    const allItems = inventory
+  .map(item => `${item.quantity} x ${item.name} (${item.unit})`)
+  .join(', ');
+
     const fullPrompt = prePrompt + allItems + afterPrompt;
     console.log('Prompt being sent to AI:', fullPrompt); // Log the prompt
   
@@ -119,7 +124,7 @@ const afterPrompt= `
   };
   
 
-  const addItem = async (itemName, unit = '') => {
+  const addItem = async (itemName, quantity = 1, unit = '') => {
     if (!itemName.trim()) {
       console.error('Item name cannot be empty');
       return;
@@ -130,16 +135,18 @@ const afterPrompt= `
   
     if (docSnap.exists()) {
       const data = docSnap.data();
-      const newQuantity = (data.quantity || 0) + 1;
+      const newQuantity = (data.quantity || 0) + (quantity || 1); // Add provided quantity or default to 1
       const updatedUnit = unit.trim() || data.unit || ''; // Default to existing unit or empty string
   
       await setDoc(docRef, { quantity: newQuantity, unit: updatedUnit });
     } else {
-      await setDoc(docRef, { quantity: 1, unit: unit.trim() || '' });
+      await setDoc(docRef, { quantity: quantity || 1, unit: unit.trim() || '' }); // Default to 1 if quantity is invalid
     }
   
     await updateInventory();
   };
+  
+  
   
   
   
@@ -153,12 +160,17 @@ const afterPrompt= `
 
   const handleAddItem = async () => {
     if (itemName.trim()) {
-      await addItem(itemName, unit); // Pass itemName and unit to addItem
-      handleClose(); // Close the modal and clear inputs
+      const parsedQuantity = Number(quantity); // Ensure quantity is a number
+      await addItem(itemName, isNaN(parsedQuantity) ? 1 : parsedQuantity, unit); // Use 1 as default if quantity is NaN
+      setItemName(''); // Clear itemName after adding
+      setQuantity(''); // Clear quantity after adding
+      setUnit(''); // Clear unit after adding
+      handleClose(); // Close the modal
     } else {
       console.error('Item name cannot be empty');
     }
   };
+  
   
   const filteredInventory = inventory.filter(item =>
     item.name.toLowerCase().includes(searchName.toLowerCase())
@@ -172,7 +184,7 @@ const afterPrompt= `
             <TableRow>
               <TableCell>Item Name</TableCell>
               <TableCell align="right">Quantity</TableCell>
-              <TableCell align="right">Unit</TableCell>
+              <TableCell align="right">Size</TableCell>
               <TableCell align="right">Action</TableCell>
             </TableRow>
           </TableHead>
@@ -256,7 +268,14 @@ const afterPrompt= `
             />
             <TextField
               variant="outlined"
-              placeholder='Unit (Optional)'
+              placeholder='Quantity'
+              fullWidth
+              value={quantity}
+              onChange={(e) => setQuantity(e.target.value)}
+            />
+            <TextField
+              variant="outlined"
+              placeholder='Size (Optional)'
               fullWidth
               value={unit}
               onChange={(e) => setUnit(e.target.value)}
@@ -277,19 +296,49 @@ const afterPrompt= `
         <Typography variant="h2" color="#333">NutriPal</Typography>
       </Box>
 
+
       {/* Recipe Prompt Section */}
     <Box className="testbar">
-      <Button type="submit" onClick={onSubmit} disabled={isLoading}>
-        {isLoading ? 'Loading...' : 'Generate Recipe'}
+      <Button type="submit" onClick={onSubmitHP} disabled={isLoading}>
+        {isLoading ? <GridLoader  color="#def6ca"/> : 'Generate High Protein Recipe'}
+      </Button>
+      <Button type="submit" onClick={''} disabled={isLoading}>
+        {isLoading ? <GridLoader  color="#def6ca"/> : 'Generate Low Carb Recipe'}
+      </Button>
+      <Button type="submit" onClick={''} disabled={isLoading}>
+        {isLoading ? <GridLoader  color="#def6ca"/> : 'Generate Plant Based Recipe'}
+      </Button>
+      <Button type="submit" onClick={''} disabled={isLoading}>
+        {isLoading ? <GridLoader  color="#def6ca"/> : 'Generate Generic 3 Meal Plan'}
       </Button>
     </Box>
-
-    {recipes && (
-      <Box>
-        <Typography variant="h6">Recipe:</Typography>
-        <ReactMarkdown>{recipes}</ReactMarkdown>
+   
+   {/* Permanent Recipe Output Box */}
+   <Box
+        width="100%"
+        maxWidth={800}
+        p={2}
+        bgcolor="#79b79120"
+        borderRadius={4}
+        boxShadow={1}
+        mt={2}
+        mb={2}
+        className="recipeBox"
+        
+      >
+        <Typography variant="h6" color="black" mb={1}>Generated Recipe:</Typography>
+        <TextField
+          variant="outlined"
+          multiline
+          fullWidth
+          
+          minRows={10}
+          maxRows={20}
+          value={recipes}
+          InputProps={{ readOnly: true }}
+          
+        />
       </Box>
-    )}
 
 
       {/* Search Bar */}
