@@ -24,40 +24,32 @@ export default function Home() {
   const [quantity, setQuantity] = useState('');
   const [searchName, setSearchName] = useState('');
   const [recipes, setRecipes] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+
+  const [isLoadingHP, setIsLoadingHP] = useState(false);
+  const [isLoadingLC, setIsLoadingLC] = useState(false);
+  const [isLoadingPB, setIsLoadingPB] = useState(false);
+  const [isLoadingGP, setIsLoadingGP] = useState(false);
 
   // Function to call the API to generate recipes
+  //Prompt for High Protein Meals
   const onSubmitHP = async () => {
     const prePrompt = `
-You are an AI nutrition expert tasked with analyzing a list of food items and their quantities. Based on this information, you need to:
-1. **Retrieve the nutritional information** for each food item.
-2. **Calculate a nutritional score** based on the nutritional content.
-3. **Generate personalized advice** for improving the nutritional quality of the meal.
-4. **Recommend healthier food swaps** if necessary.
-
-Here is the list of food items and their quantities:`
+"Using the following ingredients from the user's table in this format: 'quantity x item (weight or units)', where the total quantity is calculated as (quantity * weight), generate a high-protein recipe. Prioritize maximizing the protein content while balancing with healthy fats and carbohydrates.`
 
 const afterPrompt= `
 
-### Task 1: Retrieve Nutritional Information
-1. For each food item and quantity, retrieve the following nutritional information:
-   - Calories
-   - Fats (g)
-   - Sugars (g)
-   - Proteins (g)
-   - Fiber (g)
-   - Sodium (mg) 
+For each ingredient, calculate the total weight by multiplying the quantity by the weight (e.g., '5 x Chicken (2kg)' means 10kg of chicken). Use the calculated total weight for each ingredient to estimate the protein, fats, and carbs in the recipe but dont display in the output and make sure the output is concise, confident and presentable.
 
-### Task 2: Calculate Nutritional Score
-1. Evaluate the overall nutritional quality of the meal based on the retrieved nutritional information.
-2. Calculate a nutritional score from 0 to 100, where a higher score represents a healthier meal.
-
-### Task 3: Generate Personalized Recommendations
-1. Provide feedback on how to improve the meal’s nutritional quality, including:
-   - Suggestions for reducing excess calories, sugars, or fats.
-   - Recommendations for increasing the intake of proteins, fiber, or essential vitamins.
-   - Warnings for high sodium or unhealthy fats.
+Display the result in the following structure:
+- Recipe Name
+- Ingredients 
+- Instructions (clear step-by-step)
+- Nutritional Breakdown (Accurate calories, protein, fats, carbs)
+- Serving Size.
     `;
+
+
+  
     const allItems = inventory
   .map(item => `${item.quantity} x ${item.name} (${item.unit})`)
   .join(', ');
@@ -65,7 +57,7 @@ const afterPrompt= `
     const fullPrompt = prePrompt + allItems + afterPrompt;
     console.log('Prompt being sent to AI:', fullPrompt); // Log the prompt
   
-    setIsLoading(true);
+    setIsLoadingHP(true);
     try {
       const response = await fetch('/api/generate-recipe', {
         method: 'POST',
@@ -85,11 +77,159 @@ const afterPrompt= `
     } catch (error) {
       console.error('Failed to fetch the recipe:', error);
     } finally {
-      setIsLoading(false);
+      setIsLoadingHP(false);
     }
   };
   
+
+  const onSubmitLC = async () => {
+    const prePrompt = `
+Using the following ingredients from the user's table in this format: 'quantity x item (weight or units)', where the total quantity is calculated as (quantity * weight), generate a low-carb recipe. Prioritize minimizing carbohydrate content while ensuring sufficient protein and healthy fats.`
+
+const afterPrompt= `
+
+For each ingredient, calculate the total weight by multiplying the quantity by the weight (e.g., '5 x Chicken (2kg)' means 10kg of chicken). Use the calculated total weight for each ingredient to estimate the protein, fats, and carbs in the recipe but dont display in the ouput and make sure the output is concise, confident and presentable.
+
+Display the result in the following structure:
+- Recipe Name
+- Ingredients (with total weight and calculated carb content per item)
+- Instructions (clear step-by-step)
+- Nutritional Breakdown (calories, protein, fats, carbs, keeping carbs low)
+- Serving Size."
+    `;
+
+
   
+    const allItems = inventory
+  .map(item => `${item.quantity} x ${item.name} (${item.unit})`)
+  .join(', ');
+
+    const fullPrompt = prePrompt + allItems + afterPrompt;
+    console.log('Prompt being sent to AI:', fullPrompt); // Log the prompt
+  
+    setIsLoadingLC(true);
+    try {
+      const response = await fetch('/api/generate-recipe', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ prompt: fullPrompt }), // Use all items as prompt
+      });
+  
+      if (!response.ok) {
+        throw new Error('Failed to fetch the recipe');
+      }
+  
+      const data = await response.json();
+      console.log('Generated Recipe:', data.message);
+      setRecipes(data.message);
+    } catch (error) {
+      console.error('Failed to fetch the recipe:', error);
+    } finally {
+      setIsLoadingLC(false);
+    }
+  };
+  
+  const onSubmitPB = async () => {
+    const prePrompt = `
+Using the following ingredients from the user's table in this format: 'quantity x item (weight or units)', where the total quantity is calculated as (quantity * weight), generate a plant-based recipe. Only include plant-based ingredients, and prioritize a balance of protein, healthy fats, and carbohydrates. If this isnt possible, tell the user that the items they have is not suitable for this diet and give them alternative relvant to the list given.`
+
+const afterPrompt= `
+
+For each ingredient, calculate the total weight by multiplying the quantity by the weight (e.g., '5 x Chicken (2kg)' means 10kg of chicken). Use the calculated total weight for each ingredient to estimate the protein, fats, and carbs in the recipe but dont display in the ouput and make sure the output is concise, confident and presentable.
+
+Display the result in the following structure:
+- Recipe Name
+- Ingredients (with total weight and calculated carb content per item)
+- Instructions (clear step-by-step)
+- Nutritional Breakdown (calories, protein, fats, carbs, keeping carbs low)
+- Serving Size."
+    `;
+
+
+  
+    const allItems = inventory
+  .map(item => `${item.quantity} x ${item.name} (${item.unit})`)
+  .join(', ');
+
+    const fullPrompt = prePrompt + allItems + afterPrompt;
+    console.log('Prompt being sent to AI:', fullPrompt); // Log the prompt
+  
+    setIsLoadingPB(true);
+    try {
+      const response = await fetch('/api/generate-recipe', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ prompt: fullPrompt }), // Use all items as prompt
+      });
+  
+      if (!response.ok) {
+        throw new Error('Failed to fetch the recipe');
+      }
+  
+      const data = await response.json();
+      console.log('Generated Recipe:', data.message);
+      setRecipes(data.message);
+    } catch (error) {
+      console.error('Failed to fetch the recipe:', error);
+    } finally {
+      setIsLoadingPB(false);
+    }
+  };
+
+  const onSubmitGP = async () => {
+    const prePrompt = `
+Using the following ingredients from the user's table in this format: 'quantity x item (weight or units)', where the total quantity is calculated as (quantity * weight), generate a balanced 3-meal plan (breakfast, lunch, and dinner). Ensure that each meal includes a balance of protein, healthy fats, and carbohydrates to support a healthy diet.
+`
+
+const afterPrompt= `
+
+For each ingredient, calculate the total weight by multiplying the quantity by the weight (e.g., '5 x Chicken (2kg)' means 10kg of chicken). Use the calculated total weight for each ingredient to estimate the protein, fats, and carbs in each meal but dont display it in the ouput and make sure the output is concise, confident and presentable.
+
+Display the result in the following structure and break line between each:
+- Meal Plan (Breakfast, Lunch, Dinner)
+- Ingredients for each meal (with total weight and calculated protein, fats, and carbs per item)
+- Instructions (clear step-by-step for each meal)
+- Nutritional Breakdown (calories, protein, fats, carbs per meal)
+- Serving Size."
+
+    `;
+
+
+  
+    const allItems = inventory
+  .map(item => `${item.quantity} x ${item.name} (${item.unit})`)
+  .join(', ');
+
+    const fullPrompt = prePrompt + allItems + afterPrompt;
+    console.log('Prompt being sent to AI:', fullPrompt); // Log the prompt
+  
+    setIsLoadingGP(true);
+    try {
+      const response = await fetch('/api/generate-recipe', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ prompt: fullPrompt }), // Use all items as prompt
+      });
+  
+      if (!response.ok) {
+        throw new Error('Failed to fetch the recipe');
+      }
+  
+      const data = await response.json();
+      console.log('Generated Recipe:', data.message);
+      setRecipes(data.message);
+    } catch (error) {
+      console.error('Failed to fetch the recipe:', error);
+    } finally {
+      setIsLoadingGP(false);
+    }
+  };
   const updateInventory = async () => {
     const snapshot = query(collection(firestore, 'inventory'));
     const docs = await getDocs(snapshot);
@@ -299,17 +439,17 @@ const afterPrompt= `
 
       {/* Recipe Prompt Section */}
     <Box className="testbar">
-      <Button type="submit" onClick={onSubmitHP} disabled={isLoading}>
-        {isLoading ? <GridLoader  color="#def6ca"/> : 'Generate High Protein Recipe'}
+      <Button type="submit" onClick={onSubmitHP} disabled={isLoadingHP}>
+        {isLoadingHP ? <GridLoader  color="#def6ca"/> : 'Generate High Protein Recipe'}
       </Button>
-      <Button type="submit" onClick={''} disabled={isLoading}>
-        {isLoading ? <GridLoader  color="#def6ca"/> : 'Generate Low Carb Recipe'}
+      <Button type="submit" onClick={onSubmitLC} disabled={isLoadingLC}>
+        {isLoadingLC ? <GridLoader  color="#def6ca"/> : 'Generate Low Carb Recipe'}
       </Button>
-      <Button type="submit" onClick={''} disabled={isLoading}>
-        {isLoading ? <GridLoader  color="#def6ca"/> : 'Generate Plant Based Recipe'}
+      <Button type="submit" onClick={onSubmitPB} disabled={isLoadingPB}>
+        {isLoadingPB ? <GridLoader  color="#def6ca"/> : 'Generate Plant Based Recipe'}
       </Button>
-      <Button type="submit" onClick={''} disabled={isLoading}>
-        {isLoading ? <GridLoader  color="#def6ca"/> : 'Generate Generic 3 Meal Plan'}
+      <Button type="submit" onClick={onSubmitGP} disabled={isLoadingGP}>
+        {isLoadingGP ? <GridLoader  color="#def6ca"/> : 'Generate Generic 3 Meal Plan'}
       </Button>
     </Box>
    
