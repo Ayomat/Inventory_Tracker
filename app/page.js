@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { firestore } from '@/firebase';
+import { firestore } from '../firebase.js';
 import { Box, Typography, Modal, TextField, Stack, Button } from '@mui/material';
 import { collection, deleteDoc, doc, getDocs, query, getDoc, setDoc } from 'firebase/firestore';
 import Table from '@mui/material/Table';
