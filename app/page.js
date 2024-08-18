@@ -30,7 +30,7 @@ export default function Home() {
   const [isLoadingPB, setIsLoadingPB] = useState(false);
   const [isLoadingGP, setIsLoadingGP] = useState(false);
 
-  // Function to call the API to generate recipes
+  
   //Prompt for High Protein Meals
   const onSubmitHP = async () => {
     const prePrompt = `
@@ -48,14 +48,11 @@ Display the result in the following structure:
 - Serving Size.
     `;
 
-
-  
     const allItems = inventory
   .map(item => `${item.quantity} x ${item.name} (${item.unit})`)
   .join(', ');
 
     const fullPrompt = prePrompt + allItems + afterPrompt;
-    console.log('Prompt being sent to AI:', fullPrompt); // Log the prompt
   
     setIsLoadingHP(true);
     try {
@@ -64,7 +61,7 @@ Display the result in the following structure:
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ prompt: fullPrompt }), // Use all items as prompt
+        body: JSON.stringify({ prompt: fullPrompt }), 
       });
   
       if (!response.ok) {
@@ -82,6 +79,7 @@ Display the result in the following structure:
   };
   
 
+  //Prompt for Low Carb Meals
   const onSubmitLC = async () => {
     const prePrompt = `
 Using the following ingredients from the user's table in this format: 'quantity x item (weight or units)', where the total quantity is calculated as (quantity * weight), generate a low-carb recipe. Prioritize minimizing carbohydrate content while ensuring sufficient protein and healthy fats.`
@@ -105,7 +103,6 @@ Display the result in the following structure:
   .join(', ');
 
     const fullPrompt = prePrompt + allItems + afterPrompt;
-    console.log('Prompt being sent to AI:', fullPrompt); // Log the prompt
   
     setIsLoadingLC(true);
     try {
@@ -114,7 +111,7 @@ Display the result in the following structure:
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ prompt: fullPrompt }), // Use all items as prompt
+        body: JSON.stringify({ prompt: fullPrompt }), 
       });
   
       if (!response.ok) {
@@ -131,6 +128,7 @@ Display the result in the following structure:
     }
   };
   
+  //Prompt for Plant Based Meals
   const onSubmitPB = async () => {
     const prePrompt = `
 Using the following ingredients from the user's table in this format: 'quantity x item (weight or units)', where the total quantity is calculated as (quantity * weight), generate a plant-based recipe. Only include plant-based ingredients, and prioritize a balance of protein, healthy fats, and carbohydrates. If this isnt possible, tell the user that the items they have is not suitable for this diet and give them alternative relvant to the list given.`
@@ -154,7 +152,6 @@ Display the result in the following structure:
   .join(', ');
 
     const fullPrompt = prePrompt + allItems + afterPrompt;
-    console.log('Prompt being sent to AI:', fullPrompt); // Log the prompt
   
     setIsLoadingPB(true);
     try {
@@ -163,7 +160,7 @@ Display the result in the following structure:
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ prompt: fullPrompt }), // Use all items as prompt
+        body: JSON.stringify({ prompt: fullPrompt }), 
       });
   
       if (!response.ok) {
@@ -180,6 +177,7 @@ Display the result in the following structure:
     }
   };
 
+  //Prompt for Generic 3 Meal Plan
   const onSubmitGP = async () => {
     const prePrompt = `
 Using the following ingredients from the user's table in this format: 'quantity x item (weight or units)', where the total quantity is calculated as (quantity * weight), generate a balanced 3-meal plan (breakfast, lunch, and dinner). Ensure that each meal includes a balance of protein, healthy fats, and carbohydrates to support a healthy diet.
@@ -205,7 +203,6 @@ Display the result in the following structure and break line between each:
   .join(', ');
 
     const fullPrompt = prePrompt + allItems + afterPrompt;
-    console.log('Prompt being sent to AI:', fullPrompt); // Log the prompt
   
     setIsLoadingGP(true);
     try {
@@ -214,7 +211,7 @@ Display the result in the following structure and break line between each:
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ prompt: fullPrompt }), // Use all items as prompt
+        body: JSON.stringify({ prompt: fullPrompt }), 
       });
   
       if (!response.ok) {
@@ -230,6 +227,8 @@ Display the result in the following structure and break line between each:
       setIsLoadingGP(false);
     }
   };
+
+  //Update the inventory
   const updateInventory = async () => {
     const snapshot = query(collection(firestore, 'inventory'));
     const docs = await getDocs(snapshot);
@@ -243,6 +242,7 @@ Display the result in the following structure and break line between each:
     setInventory(inventoryList);
   };
   
+  //Remove an item
   const removeItem = async (itemName) => {
     if (!itemName) return;
   
@@ -256,7 +256,7 @@ Display the result in the following structure and break line between each:
       if (quantity === 1) {
         await deleteDoc(docRef);
       } else {
-        await setDoc(docRef, { quantity: quantity - 1, unit: unit || '' }); // Preserve unit
+        await setDoc(docRef, { quantity: quantity - 1, unit: unit || '' }); 
       }
     }
   
@@ -264,6 +264,7 @@ Display the result in the following structure and break line between each:
   };
   
 
+  //Add a new item
   const addItem = async (itemName, quantity = 1, unit = '') => {
     if (!itemName.trim()) {
       console.error('Item name cannot be empty');
@@ -275,22 +276,17 @@ Display the result in the following structure and break line between each:
   
     if (docSnap.exists()) {
       const data = docSnap.data();
-      const newQuantity = (data.quantity || 0) + (quantity || 1); // Add provided quantity or default to 1
-      const updatedUnit = unit.trim() || data.unit || ''; // Default to existing unit or empty string
+      const newQuantity = (data.quantity || 0) + (quantity || 1);
+      const updatedUnit = unit.trim() || data.unit || ''; 
   
       await setDoc(docRef, { quantity: newQuantity, unit: updatedUnit });
     } else {
-      await setDoc(docRef, { quantity: quantity || 1, unit: unit.trim() || '' }); // Default to 1 if quantity is invalid
+      await setDoc(docRef, { quantity: quantity || 1, unit: unit.trim() || '' }); 
     }
   
     await updateInventory();
   };
   
-  
-  
-  
-  
-
   useEffect(() => {
     updateInventory();
   }, []);
@@ -298,24 +294,26 @@ Display the result in the following structure and break line between each:
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
+  //Add New Item Button
   const handleAddItem = async () => {
     if (itemName.trim()) {
-      const parsedQuantity = Number(quantity); // Ensure quantity is a number
-      await addItem(itemName, isNaN(parsedQuantity) ? 1 : parsedQuantity, unit); // Use 1 as default if quantity is NaN
-      setItemName(''); // Clear itemName after adding
-      setQuantity(''); // Clear quantity after adding
-      setUnit(''); // Clear unit after adding
-      handleClose(); // Close the modal
+      const parsedQuantity = Number(quantity);
+      await addItem(itemName, isNaN(parsedQuantity) ? 1 : parsedQuantity, unit); 
+      setItemName(''); 
+      setQuantity(''); 
+      setUnit(''); 
+      handleClose(); 
     } else {
       console.error('Item name cannot be empty');
     }
   };
   
-  
+  //Search Functionality
   const filteredInventory = inventory.filter(item =>
     item.name.toLowerCase().includes(searchName.toLowerCase())
   );
 
+  //Table Layout
   function DenseTable({ rows, onAdd, onRemove }) {
     return (
       <TableContainer component={Paper} className="mainTable">
@@ -453,7 +451,7 @@ Display the result in the following structure and break line between each:
       </Button>
     </Box>
    
-   {/* Permanent Recipe Output Box */}
+   {/* Permanent Recipe Output Box */} 
    <Box
         width="100%"
         maxWidth={800}
