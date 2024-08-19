@@ -11,67 +11,24 @@ body {
   background: #79b79115;
   color: #333;
   font-family: "Poppins", sans-serif;
-  margin: 0;
+  margin: 0px;
   padding: 0;
   overflow: scroll;
 }
 
-/* Navigation */
-.nav {
-  position: fixed; 
-  top: 0; 
-  left: 0;
-  width: 100%;
-  height: 90px; 
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.nav{
   background: #79b791;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   color: #def6ca;
-  padding: 0 20px;
-  z-index: 1000;
-}
 
-.nav h2 {
-  color: #DEF6CA;
-}
+} 
 
-/* Search Bar */
-.searchbar {
-  transform: translateX(-35vw);
-  
-  display: flex;
-  flex-direction: column;
-  width: 90%;
-  max-width: 400px;
+.searchbar{
   padding: 10px;
+  border-radius: 15px;
+
   background-color: white;
-  border-radius: 15px;
-  margin-top: -175vh;
-  margin-bottom: 0;
-  position: relative; 
-  
-}
 
-/* Table Container */
-.table-container {
-  
-  display: flex;
-  flex-direction: column; 
-  align-items: center; 
-  
-  width: 90%;
-}
-
-/* Table */
-.mainTable {
-  transform: translateX(-33vw);
-  width: 133%;
-  max-width: 800px;
-  border-radius: 15px;
-  overflow: auto;
-  margin-top: -15vh;
 }
 
 /* Table Header */
@@ -141,38 +98,17 @@ body {
 .addNew {
   background-color: #79b791;
   text-transform: capitalize;
-  padding: 12px;
-  width: 180px;
+  padding: 10px;
+  width: 250px;
   font-size: 14pt;
-  
   display: block; 
-  transform: translateY(-11vh);
-  margin-left: -30vw;
-  margin-bottom: 40px;
 }
 
 .addNew:hover {
   background-color: #66a870; 
 }
 
-.recipeContainer{
-  transform: translateY(-87vh);
-  padding: 0;
-  margin: 0;
-  position: relative;
-}
 /* The 4 buttons recipe generation buttons */
-.testbar {
-  display: flex;
-  flex-wrap: wrap; 
-  justify-content: center; 
-  margin-top: 70vh;
-  margin-left:  40vw ;
-  width: 90%;
-  max-width: 800px;
-  position: relative; 
-}
-
 .testbar button {
   background-color: #79b791; 
   text-transform: capitalize;
@@ -182,7 +118,7 @@ body {
   height: 60px;
   font-size: 13pt;
   margin: 10px;
-  margin-bottom: -10vh;
+  
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   
 }
@@ -191,21 +127,18 @@ body {
   background-color: #66a870; 
 }
 
+
 /* Styles for Recipe Box */
 .recipeBox {
-  position: relative;
-  bottom: 45px; 
-  left: 50%; 
-  transform: translateX(-12%);
-  width: 90%;
-  max-width: 800px;
-  height: 65vh;
+  
+  
+
   
   background-color: #f9f9f9; 
   border-radius: 15px;
   box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15); 
   padding-top: 0;
-  margin-top: 18vh;
+  
   overflow:auto;
   
 }
@@ -224,33 +157,3 @@ body {
   border-color: #79b791; 
 }
 
-/* Media Queries */
-@media (max-width: 768px) {
-  /* Adjustments for smaller screens */
-
-  .nav {
-    height: 70px;
-    padding: 0 10px;
-  }
-
-  .searchbar {
-    width: 80%;
-  }
-
-  .mainTable {
-    width: 90%;
-  }
-
-  .addNew {
-    width: 100%;
-    font-size: 12pt;
-  }
-
-  .testbar button {
-    width: 100%;
-  }
-
-  .recipeBox {
-    height: 50vh;
-  }
-}

@@ -1,7 +1,20 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { firestore } from '../firebase.js';
-import { Box, Typography, Modal, TextField, Stack, Button } from '@mui/material';
+import { Box,
+  Button,
+  Modal,
+  Stack,
+  TextField,
+  Typography,
+  Paper,
+  Grid,
+  Card,
+  CardContent,
+  CardActions,
+  AppBar,
+  Toolbar,
+  IconButton} from '@mui/material';
 import { collection, deleteDoc, doc, getDocs, query, getDoc, setDoc } from 'firebase/firestore';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -9,7 +22,6 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
 import './globals.css';
 import SpaIcon from '@mui/icons-material/Spa';
 import ReactMarkdown from 'react-markdown';
@@ -360,16 +372,92 @@ Display the result in the following structure and break line between each:
 
   return (
     <Box
+    className="parentBox"
       width="100vw"
-      height="100vh"
+      
       display="flex"
       flexDirection="column"
       justifyContent="center"
       alignItems="center"
       gap={2}
     >
-      {/* Add Item popout Box */}
-      <Modal open={open} onClose={handleClose}>
+
+      {/* Navbar */}
+      <AppBar position='static'>
+      <Toolbar className="nav">
+        <SpaIcon sx={{ fontSize: 70}} />
+        <Typography  variant="h2" color="#def6ca" component="div" sx={{ flexGrow: 1 }}>NutriPal</Typography>
+      </Toolbar>
+</AppBar>
+
+<Box
+className="topRow"
+        width="100vw"
+        height="20rem"
+        
+        mb="-10rem"
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        padding={3}
+      >
+
+      
+
+
+      <Stack 
+      mt="-10rem"
+    
+      mr="20rem"
+      direction="row"
+      spacing={20} 
+      alignItems="center" 
+      className="recipeContainer">
+
+
+   {/* Search Bar */}
+   <Stack 
+   className="searchbar"
+   direction="row"
+  spacing={2}>
+        <TextField
+          
+          fullWidth
+          label="Search Items"
+          value={searchName}
+          onChange={(e) => setSearchName(e.target.value)}
+        />
+      
+
+      <Button
+        variant="contained"
+        className="addNew"
+        onClick={() => handleOpen()}
+      >
+        Add New Item
+      </Button>
+      </Stack>
+  <Box className="testbar">
+    <Button type="submit" onClick={onSubmitHP} disabled={isLoadingHP}>
+      {isLoadingHP ? <GridLoader color="#def6ca"/> : 'Generate High Protein Recipe'}
+    </Button>
+    <Button type="submit" onClick={onSubmitLC} disabled={isLoadingLC}>
+      {isLoadingLC ? <GridLoader color="#def6ca"/> : 'Generate Low Carb Recipe'}
+    </Button>
+    <Button type="submit" onClick={onSubmitPB} disabled={isLoadingPB}>
+      {isLoadingPB ? <GridLoader color="#def6ca"/> : 'Generate Plant Based Recipe'}
+    </Button>
+    <Button type="submit" onClick={onSubmitGP} disabled={isLoadingGP}>
+      {isLoadingGP ? <GridLoader color="#def6ca"/> : 'Generate Generic 3 Meal Plan'}
+    </Button>
+  </Box>
+
+ 
+</Stack>
+</Box>
+
+{/* Add Item popout Box */}
+<Modal open={open} onClose={handleClose}>
         <Box
           position="absolute"
           top="50%"
@@ -390,6 +478,7 @@ Display the result in the following structure and break line between each:
          
           
         >
+
           <Typography variant="h6" >Add Item</Typography>
           <Stack
             width="100%"
@@ -428,32 +517,31 @@ Display the result in the following structure and break line between each:
         </Box>
       </Modal>
 
-      {/* Navbar */}
-      <Box className="nav">
-        <SpaIcon sx={{ fontSize: 70 }} />
-        <Typography variant="h2" color="#333">NutriPal</Typography>
+<Box
+width="92vw"
+
+>
+  
+ {/*Recipe Output Box */}
+ <Stack
+
+ direction="row"
+
+
+spacing="5vw" 
+ alignItems="center"
+ >
+      {/* Table and Button Container */}
+      <Box className="tableContainer"
+      >
+        <DenseTable
+          rows={filteredInventory}
+          onAdd={addItem}
+          onRemove={removeItem}
+        />
       </Box>
 
-
-      <Box className="recipeContainer">
-  {/* Recipe Prompt Section */}
-  <Box className="testbar">
-    <Button type="submit" onClick={onSubmitHP} disabled={isLoadingHP}>
-      {isLoadingHP ? <GridLoader color="#def6ca"/> : 'Generate High Protein Recipe'}
-    </Button>
-    <Button type="submit" onClick={onSubmitLC} disabled={isLoadingLC}>
-      {isLoadingLC ? <GridLoader color="#def6ca"/> : 'Generate Low Carb Recipe'}
-    </Button>
-    <Button type="submit" onClick={onSubmitPB} disabled={isLoadingPB}>
-      {isLoadingPB ? <GridLoader color="#def6ca"/> : 'Generate Plant Based Recipe'}
-    </Button>
-    <Button type="submit" onClick={onSubmitGP} disabled={isLoadingGP}>
-      {isLoadingGP ? <GridLoader color="#def6ca"/> : 'Generate Generic 3 Meal Plan'}
-    </Button>
-  </Box>
-
-  {/*Recipe Output Box */}
-  <Box
+      <Box
     width="100%"
     maxWidth={800}
     p={2}
@@ -477,36 +565,9 @@ Display the result in the following structure and break line between each:
       InputProps={{ readOnly: true }}
     />
   </Box>
-</Box>
 
-
-
-      {/* Search Bar */}
-      <Box className="searchbar">
-        <TextField
-          fullWidth
-          label="Search Items"
-          value={searchName}
-          onChange={(e) => setSearchName(e.target.value)}
-        />
-      </Box>
-
-      <Button
-        variant="contained"
-        className="addNew"
-        onClick={() => handleOpen()}
-      >
-        Add New Item
-      </Button>
-
-      {/* Table and Button Container */}
-      <Box className="tableContainer">
-        <DenseTable
-          rows={filteredInventory}
-          onAdd={addItem}
-          onRemove={removeItem}
-        />
-      </Box>
+      </Stack>
+    </Box>
     </Box>
   );
 }
