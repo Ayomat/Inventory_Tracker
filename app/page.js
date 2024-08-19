@@ -435,48 +435,50 @@ Display the result in the following structure and break line between each:
       </Box>
 
 
-      {/* Recipe Prompt Section */}
-    <Box className="testbar">
-      <Button type="submit" onClick={onSubmitHP} disabled={isLoadingHP}>
-        {isLoadingHP ? <GridLoader  color="#def6ca"/> : 'Generate High Protein Recipe'}
-      </Button>
-      <Button type="submit" onClick={onSubmitLC} disabled={isLoadingLC}>
-        {isLoadingLC ? <GridLoader  color="#def6ca"/> : 'Generate Low Carb Recipe'}
-      </Button>
-      <Button type="submit" onClick={onSubmitPB} disabled={isLoadingPB}>
-        {isLoadingPB ? <GridLoader  color="#def6ca"/> : 'Generate Plant Based Recipe'}
-      </Button>
-      <Button type="submit" onClick={onSubmitGP} disabled={isLoadingGP}>
-        {isLoadingGP ? <GridLoader  color="#def6ca"/> : 'Generate Generic 3 Meal Plan'}
-      </Button>
-    </Box>
-   
-   {/* Permanent Recipe Output Box */} 
-   <Box
-        width="100%"
-        maxWidth={800}
-        p={2}
-        bgcolor="#79b79120"
-        borderRadius={4}
-        boxShadow={1}
-        mt={2}
-        mb={2}
-        className="recipeBox"
-        
-      >
-        <Typography variant="h6" color="black" mb={1}>Generated Recipe:</Typography>
-        <TextField
-          variant="outlined"
-          multiline
-          fullWidth
-          
-          minRows={10}
-          maxRows={20}
-          value={recipes}
-          InputProps={{ readOnly: true }}
-          
-        />
-      </Box>
+      <Box className="recipeContainer">
+  {/* Recipe Prompt Section */}
+  <Box className="testbar">
+    <Button type="submit" onClick={onSubmitHP} disabled={isLoadingHP}>
+      {isLoadingHP ? <GridLoader color="#def6ca"/> : 'Generate High Protein Recipe'}
+    </Button>
+    <Button type="submit" onClick={onSubmitLC} disabled={isLoadingLC}>
+      {isLoadingLC ? <GridLoader color="#def6ca"/> : 'Generate Low Carb Recipe'}
+    </Button>
+    <Button type="submit" onClick={onSubmitPB} disabled={isLoadingPB}>
+      {isLoadingPB ? <GridLoader color="#def6ca"/> : 'Generate Plant Based Recipe'}
+    </Button>
+    <Button type="submit" onClick={onSubmitGP} disabled={isLoadingGP}>
+      {isLoadingGP ? <GridLoader color="#def6ca"/> : 'Generate Generic 3 Meal Plan'}
+    </Button>
+  </Box>
+
+  {/*Recipe Output Box */}
+  <Box
+    width="100%"
+    maxWidth={800}
+    p={2}
+    bgcolor="#79b79120"
+    borderRadius={4}
+    boxShadow={1}
+    mt={2}
+    mb={2}
+    className="recipeBox"
+  >
+    <Typography variant="h6" color="black" mb={1}>
+      Generated Recipe:
+    </Typography>
+    <TextField
+      variant="outlined"
+      multiline
+      fullWidth
+      minRows={10}
+      maxRows={20}
+      value={recipes}
+      InputProps={{ readOnly: true }}
+    />
+  </Box>
+</Box>
+
 
 
       {/* Search Bar */}
